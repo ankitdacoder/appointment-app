@@ -5,6 +5,9 @@ import com.appointment_app.entity.User;
 import com.appointment_app.repository.AppointmentRepository;
 import com.appointment_app.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -45,13 +48,15 @@ public class AppointmentService {
         appointment.setPatient(patient);
         appointment.setReason(reason);
         appointment.setAppointmentDate(unixTimestamp);
-
-
         return appointmentRepo.save(appointment);
     }
 
-    public List<Appointment> getAppointmentsByDate(Long date) {
-        return appointmentRepo.findAppointmentsForTodayAndFuture(date);
+    public List<Appointment> getAppointmentsByDate(Long date,int page,
+                                                   int size) {
+        // Create Pageable with sorting by timestamp (descending)
+        Pageable pageable = PageRequest.of(page, size, Sort.by("appointmentDate").descending());
+
+        return appointmentRepo.findAppointmentsForTodayAndFuture(date,pageable);
     }
 
 
